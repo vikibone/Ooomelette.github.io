@@ -1,0 +1,70 @@
+offset//返回一个指向最近的（closest，指包含层级上的最近）包含该元素的定位元素。如果没有定位的元素，则 offsetParent 为最近的 table元素对象或根元素（标准模式下为 html；quirks 模式下为 body）。
+
+    chrome：
+        父元素的窗口的情况下：
+            offsetHeight = border + padding  不包含margin 也就是说offset包含border及以内的区域。
+            offsetTop = margin + top  不包含border及以内的值
+            offsetLeft = margin + left
+
+
+        在元素内
+            无position的情况下
+                1.offsetTop 相对于body元素的内容开始的  也就是相对于父级元素的border
+                  child.offsetTop = child.marginTop + parents.paddingTop + parents.borderTop
+                2.offsetLeft 同上
+                  child.offsetLeft = child.marginLeft + child.Left + parents.paddingLeft + parents.borderLeft
+
+                14
+
+            在position的情况下
+                1.offsetTop :child.offsetTop = child.marginTop + parents.paddingTop   不包含parent.border 从内容区域开始，不包含border
+
+
+
+
+
+        在position为absolute的情况下，有相同z—index的情况
+
+
+
+
+client
+    chrome：
+        父元素的窗口的情况下：
+            clientWidth和clientHeight 不包含border  包含padding + width的区域。
+            clientTop = border的宽度
+            clientLeft = border 的宽度
+
+    在元素内
+            1.clientWidth和clientHeight 不包含border  包含padding + width的区域。
+
+        在position为absolute的情况下，有相同z—index的情况
+
+
+
+
+
+
+
+
+style
+
+
+关于元素宽度和高度有offsetHeight，clientHeight，
+计算：border = element.offsetHeight - element.clientHeight;
+
+
+
+
+
+
+offset 和 style的区别
+
+
+
+offset 和client的区别
+
+
+
+style和client的区别
+
