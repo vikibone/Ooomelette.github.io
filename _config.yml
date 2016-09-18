@@ -38,9 +38,9 @@ disqus_shortname: "rainyalley"
 
 
 
-# url: "http://blog.rainyalley.com"
-# imgrepo: "http://blog.rainyalley.com/static/img"
+url: "https://ooomelette.github.io"
+imgrepo: "https://ooomelette.github.io/static/img"
 
-url: "http://127.0.0.1:3000"
-imgrepo: "http://127.0.0.1:3000/static/img"
-port: 3000
+# url: "http://127.0.0.1:3000"
+# imgrepo: "http://127.0.0.1:3000/static/img"
+# port: 3000
