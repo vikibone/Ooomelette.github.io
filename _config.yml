@@ -1,5 +1,8 @@
 permalink: /:year-:month-:day/:title/
 
+
+gems: [jekyll-paginate]
+
 highlighter: rouge
 markdown: kramdown
 kramdown:
@@ -35,10 +38,9 @@ disqus_shortname: "rainyalley"
 
 
 
-url: "http://blog.rainyalley.com"
-imgrepo: "http://blog.rainyalley.com/static/img"
+# url: "http://blog.rainyalley.com"
+# imgrepo: "http://blog.rainyalley.com/static/img"
 
-
-#url: "http://127.0.0.1:4000"
-#imgrepo: "http://127.0.0.1:4000/static/img"
-
+url: "http://127.0.0.1:3000"
+imgrepo: "http://127.0.0.1:3000/static/img"
+port: 3000
