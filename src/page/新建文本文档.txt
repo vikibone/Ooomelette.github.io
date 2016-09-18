@@ -8,37 +8,27 @@ offset//返回一个指向最近的（closest，指包含层级上的最近）�
 
 
         在元素内
-            无position的情况下
+            父级集中无position的情况下//parentNodes hasn't attribute that position
+
                 1.offsetTop 相对于body元素的内容开始的  也就是相对于父级元素的border
                   child.offsetTop = child.marginTop + parents.paddingTop + parents.borderTop
+
                 2.offsetLeft 同上
                   child.offsetLeft = child.marginLeft + child.Left + parents.paddingLeft + parents.borderLeft
 
-                14
+            父级元素集中有定位的情况下 // parentNodes has attribute to position
 
-            在position的情况下
                 1.offsetTop :child.offsetTop = child.marginTop + parents.paddingTop   不包含parent.border 从内容区域开始，不包含border
-
-
-
-
-
-        在position为absolute的情况下，有相同z—index的情况
-
 
 
 
 client
     chrome：
-        父元素的窗口的情况下：
-            clientWidth和clientHeight 不包含border  包含padding + width的区域。
+            如果是浏览器窗口的高度，可以是document.documentElement.clientHeight
+            clientWidth和clientHeight 不包含border  包含padding + content的区域。
             clientTop = border的宽度
             clientLeft = border 的宽度
 
-    在元素内
-            1.clientWidth和clientHeight 不包含border  包含padding + width的区域。
-
-        在position为absolute的情况下，有相同z—index的情况
 
 
 
