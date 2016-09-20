@@ -40,6 +40,10 @@ layout: null
     color: #fff;
 }
 
+.navbar-header {
+    line-height: 1.4;
+}
+
 
 .navbar-tiffany .nav>li>a:hover,
 .navbar-tiffany .nav>li>a:focus,
