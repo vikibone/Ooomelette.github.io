@@ -119,6 +119,10 @@
 .content-navigation{
     max-width: 292px;
     padding-left: 30px;
+    /*为了fix  yangbo*/
+    position: fixed;
+    left: 50%;
+    margin-left: 300px;
 }
 .content-navigation-header {
     display: block;

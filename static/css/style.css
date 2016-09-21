@@ -119,7 +119,8 @@ body,code,pre{
 }
 
 body,.sheet,pre,code{
-    font-size: 17px;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 
@@ -266,3 +267,11 @@ a:active {text-decoration: none}	/* 选定的链接 */
         font-size: 36px;
     }
 }
+
+
+/*h2, .h2{
+    font-size:21px;
+}
+h3, .h3{
+    font-size:21px;
+}*/
