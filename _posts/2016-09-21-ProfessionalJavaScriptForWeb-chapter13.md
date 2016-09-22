@@ -155,7 +155,209 @@ categories: javascript高级程序设计
 
 
 
-不明白的地方，事件的注册 理解：
+**理解：**
 注册和执行是不一样的，在一个事件里面，有完整的事件流，在这个事件流的过程中，我们在不同的阶段可以注册不同的事件处理函数，当事件流传播到这个事件注册的位置时，事件处理函数就会执行，但是stopPropagation()可以阻止事件流的向后传递，当我们使用stopPropagation()后，后面的事件流就会被截断。
 
 **1、IE中的事件对象**
+
+IE中的事件对象和DOM中的事件对象不同，分为以下几个方面：
+
+1. 1、在使用DOM0级添加事件的时候
+
+IE的事件对象是一个window对象的一个属性存在。
+
+```javascript
+
+    var btn = document.getElementById("myBtn");
+    btn.onclick = function(){
+        var event = window.event;
+        alert(event.type); //"click"
+    };
+
+```
+**注：**IE事件type属性和DOM事件的type属性是相同的
+
+2. 2、使用attachEvent()，detachEvent()来添加或者删除事件
+
+- 可以在window中访问事件（跟DOM0级一样的访问方式）
+- 可以在绑定事件中传入一个event事件，跟addEventListener一样的模式
+
+```javascript
+
+    var btn = document.getElementById("myBtn");
+    btn.attachEvent('onclick', function(event) { //可以这么使用
+
+        console.log(window.event.type) //也可以这么访问
+
+    })
+
+```
+
+3. 3、HTML事件绑定
+
+- 和html事件绑定一样，在html元素中直接传入event事件
+
+```javascript
+
+   <input type="button" value="Click Me" onclick="alert(event.type)">
+
+```
+
+1. 4、事件属性
+
+事件属性有很大的差别，但是有下面的几个属性，所有的事件对象都包含
+
+| 属性/方法           |   类 型         | 读/写    |                  说       明                                                  |
+| -------------       |:--------:       | :---:    |     :-----------------------------------------------------------------        |
+| cancelBubble        | Boolean         | 读/写    |     默认值为false，但将其设置为true就可以取消事件冒泡（与DOM中的stopPropagation()方法的作用相同）  |
+| returnValue         | Boolean         | 读/写    |     默认值为true，但将其设置为false就可以取消事件的默认行为（与
+DOM中的preventDefault()方法的作用相同）                                                                |
+| srcElement          | Element         | 只读     |     事件的目标（与DOM中的target属性相同）                                                        |
+| type                | String          | 只读     |     被触发的事件的类型         |
+
+
+区别：cancelBubble 只能去除事件冒泡，因为IE不支持事件捕获，但是stopPropagatioin()可以同时取消事件捕获和事件冒泡。
+
+1.  5、跨浏览器的事件对象
+
+
+```javascript
+
+var EventUtil = {
+    addHandler: function(element, type, handler){
+    //省略的代码
+    },
+    getEvent: function(event){
+        return event ? event : window.event;
+    },
+    getTarget: function(event){
+        return event.target || event.srcElement;
+    },
+    preventDefault: function(event){
+        if (event.preventDefault){
+            event.preventDefault();
+        } else {
+            event.returnValue = false;
+        }
+    },
+    removeHandler: function(element, type, handler){
+        //省略的代码
+    },
+    stopPropagation: function(event){
+        if (event.stopPropagation){
+            event.stopPropagation();
+        } else {
+            event.cancelBubble = true;
+        }
+    }
+};
+```
+
+## 事件类型
+
+DOM3级规定了以下的事件类型
+UI（User Interface，用户界面）事件，当用户与页面上的元素交互时触发；
+
+- 焦点事件，当元素获得或失去焦点时触发；
+- 鼠标事件，当用户通过鼠标在页面上执行操作时触发；
+- 滚轮事件，当使用鼠标滚轮（或类似设备）时触发；
+- 文本事件，当在文档中输入文本时触发；
+- 键盘事件，当用户通过键盘在页面上执行操作时触发；
+- 合成事件，当为 IME（Input Method Editor，输入法编辑器）输入字符时触发；
+- 变动（mutation）事件，当底层 DOM 结构发生变化时触发。
+
+h5页定制了一组事件，这里需要去查阅下资料
+
+**支持：**DOM3 级事件模块在 DOM2 级事件模块基础上重新定义了这些事件，也添加了一些新事件。包括IE9 在内的所有主流浏览器都支持 DOM2 级事件。 IE9 也支持 DOM3 级事件。
+
+**1、UI事件**
+
+- load ：当页面完全加载后在 window 上面触发，当所有框架都加载完毕时在框架集上面触发，当图像加载完毕时在<img>元素上面触发，或者当嵌入的内容加载完毕时在<object>元素上面触发。
+
+- unload：当页面完全卸载后在 window 上面触发，当所有框架都卸载后在框架集上面触发，或者当嵌入的内容卸载完毕后在<object>元素上面触发。
+
+- abort：在用户停止下载过程时，如果嵌入的内容没有加载完，则在<object>元素上面触发。
+
+- error ：当发生 JavaScript 错误时在 window 上面触发，当无法加载图像时在<img>元素上面触发，当无法加载嵌入内容时在<object>元素上面触发，或者当有一或多个框架无法加载时在框架集上面触发。第 17 章将继续讨论这个事件。
+**比如：**在zepto中用来提示错误的时候，监听的errer事件；
+
+- select：当用户选择文本框（\<input\>或\<texterea\>）中的一或多个字符时触发。第 14 章将继续讨论这个事件。
+
+- resize：当窗口或框架的大小变化时在 window 或框架上面触发。
+
+- scroll：当用户滚动带滚动条的元素中的内容时，在该元素上面触发。 <body>元素中包含所加载页面的滚动条。
+
+上面这些事件都属于DOM2级事件，要确定浏览器是否支持DOM2级事件，可以使用以下代码：
+    var isSupported = document.implementation.hasFeature("HTMLEvents", "2.0");
+    是否支持DOM3级，可以使用以下代码：
+    var isSupported = document.implementation.hasFeature("UIEvent", "3.0");
+
+**事件详解**
+
+ 1. load：
+
+在window或者body中
+
+window上的onload事件是当页面所有的元素都加载完毕之后触发的事件，本来在DOM2级中，只要求在document中实现这个事件，但是为了保证向后兼容性，各大浏览器都在window中实现了这个事件。我们推介使用这个事件的时候，尽量使用js的形式来实现。
+
+在image中实现
+
+
+ 2. resize：
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**2、焦点事件**
+
+**3、鼠标与轮滚事件**
+
+**4、键盘与文本事件**
+
+**5、复合事件事件**
+
+**6、变动事件**
+
+**7、html5事件**
+
+**8、设备事件**
+
+**9、触摸与手势事件**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
