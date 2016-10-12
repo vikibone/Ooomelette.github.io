@@ -302,31 +302,232 @@ window上的onload事件是当页面所有的元素都加载完毕之后触发�
 
 在image中实现
 
+图像元素也可以触发load事件，无论在DOM中的图像还是在HTML中的图像。
+这里先说一下触发的机制，在图片进行加载的时候，我们需要有一个src属性，我这个src属性里面的东西加载完成的时候，就会触发load事件，那么在外部引用的js也有src属性，这个是否也可以触发load呢？在 IE9+、 Firefox、 Opera、 Chrome 和 Safari 3+及更高版本中， <script>元素也会触发 load 事件，以便开发人员确定动态加载的 JavaScript 文件是否加载完毕。这里需要注意的有2点 IE8不支持，还有动态加载的img和script元素，load事件必须在src赋值之前定义。
+
+
+```
+demo:script的load
+EventUtil.addHandler(window, "load", function(){
+    var script = document.createElement("script");
+    EventUtil.addHandler(script, "load", function(event){
+        alert("Loaded");
+    });
+    script.src = "example.js";
+    document.body.appendChild(script);
+});
+
+demo：image的load
+
+EventUtil.addHandler(window, "load", function(){
+    var image = new Image();
+    EventUtil.addHandler(image, "load", function(event){
+        alert("Image loaded!");
+    });
+    image.src = "smile.gif";
+});
+
+```
+这里的Image() 对象是在DOM0级实现的。
+
+<br>
+<br>
+<b> 这里顺带说下load事件  defer属性，document.readyState ,DOMContentLoaded</b>
+
+首先我们看下MDN中的解释：
+
+DOMContentLoaded： 页面文档完全加载并解析完毕之后,会触发DOMContentLoaded事件，HTML文档不会等待样式文件,图片文件,子框架页面的加载(load事件可以用来检测HTML页面是否完全加载完毕(fully-loaded))。
+
+document.readyState： 当document文档正在加载时,返回"loading"。当文档结束渲染但在加载内嵌资源时，返回"interactive"，并引发DOMContentLoaded事件。当文档加载完成时,返回"complete"，并引发load事件。
+
+defer： 这个布尔属性定义该脚本是否会延迟到文档解析完毕后才执行。但因为这个功能还未被所有主流浏览器实施，开发人员不应假设脚本实际上都会被延迟执行。defer属性不应在没有src属性的脚本标签上使用。从Gecko 1.9.2开始, 没有src属性的脚本标签的defer属性会被忽略。但是在Gecko 1.9.1中，如果定义了defer属性，即使内嵌的脚本也会被延迟执行。
+
+从MDN中已经得到了详细的解释，那么总结一下
+load：文档加载完成时执行，包括js，image，css样式表。
+defer :会使有src属性的元素，延迟到文档解析完毕后才执行，至于解析和加载时2个概念，千万别混了。
+document.readyState： 这个是事件是在加载的时候的一个属性，其中比较重要的几种状态，加载时-loading；结束渲染但在加载内嵌资源-interactive并且这个时候引发内容加载事件DOMContentLoaded，以及最后的-complete表明内嵌资源加载完成。
+所以load和DOMContentLoaded这两个事件不过使加载过程中不同状态触发的事件。其实它总共包含下面5总状态
+
+   uninitialized（未初始化）：对象存在但尚未初始化。
+ loading（正在加载）：对象正在加载数据。
+ loaded（加载完毕）：对象加载数据完成。
+ interactive（交互）：可以操作对象了，但还没有完全加载。
+ complete（完成）：对象已经加载完毕。
+
+
+下面看看各大框架的ready函数：
+
+zepto 的ready函数
+
+```
+
+readyRE = /complete|loaded|interactive/;
+...
+...
+ready: function(callback){
+      // need to check if document.body exists for IE as that browser reports
+      // document ready when it hasn't yet created the body element
+      if (readyRE.test(document.readyState) && document.body) callback($)
+      else document.addEventListener('DOMContentLoaded', function(){ callback($) }, false)
+      return this
+    },
+
+```
+
+jquery 的ready函数
+
+```
+
+// Catch cases where $(document).ready() is called
+// after the browser event has already occurred.
+// Support: IE <=9 - 10 only
+// Older IE sometimes signals "interactive" too soon
+if ( document.readyState === "complete" ||
+    ( document.readyState !== "loading" && !document.documentElement.doScroll ) ) {
+
+    // Handle it asynchronously to allow scripts the opportunity to delay ready
+    window.setTimeout( jQuery.ready );
+
+} else {
+
+    // Use the handy event callback
+    document.addEventListener( "DOMContentLoaded", completed );
+
+    // A fallback to window.onload, that will always work
+    window.addEventListener( "load", completed );
+}
+```
+
+解释下 document.documentElement.doScroll 这个东西，这个属性存在，那么说明浏览器可以执行scroll，也表明dom加载完成。
+用到的原理就是上面查到的这些。
+
 
  2. resize：
 
+当一个浏览器窗口被调整到一个新的高度或者宽度时，会触发resize事件。这个事件在window上触发。
+与其他发生在 window 上的事件类似，在兼容 DOM 的浏览器中，传入事件处理程序中的 event 对象有一个 target 属性，值为 document；
 
+```
+EventUtil.addHandler(window, "resize", function(event){
+    alert("Resized");
+});
+```
 
+3.scroll事件
 
+它表示的是一种页面中相应元素的变化。
+在混杂模式下，可以通过body元素的scrollLeft 和scrollTop来监听这个变化，而在标准模式下，除了safari了之外的所有浏览器都会通过html来反应这种变化。（safari依然根据body）
 
+这里解释下混杂模式和标准模式。document.compatMode 这个属性可以用来判断时标准模式还是混杂模式。如果为混杂模式，那么他的指为BackCompat，如果为标准模式，那么它的指为CSS1Compat。
 
+```
+    EventUtil.addHandler(window, "scroll", function(event){
+        if (document.compatMode == "CSS1Compat"){
+            alert(document.documentElement.scrollTop);
+        } else {
+            alert(document.body.scrollTop);
+        }
+    });
+```
 
+scroll事件和resize事件一样，会被多次触发。
 
+其实scroll函数会在滚动的时候触发速度特别快，如果进行DOM操作，会影响性能，其实较好的解决方案就是防抖动函数，利用setTimeout 来延时触发，当然还是不推荐在scroll中操作DOM节点。
 
+下面这两个函数来自underscore.js 有些地方得引用没写出来，大家可以去网站查 https://github.com/jashkenas/underscore/blob/master/underscore.js
 
+节流函数
 
+```
+// 简单的节流函数
+function throttle(func, wait, mustRun) {
+    var timeout,
+        startTime = new Date();
 
+    return function() {
+        var context = this,
+            args = arguments,
+            curTime = new Date();
 
+        clearTimeout(timeout);
+        // 如果达到了规定的触发时间间隔，触发 handler
+        if(curTime - startTime >= mustRun){
+            func.apply(context,args);
+            startTime = curTime;
+        // 没达到触发间隔，重新设定定时器
+        }else{
+            timeout = setTimeout(func, wait);
+        }
+    };
+};
 
+```
 
+防抖函数：
 
+```
+// Returns a function, that, as long as it continues to be invoked, will not
+  // be triggered. The function will be called after it stops being called for
+  // N milliseconds. If `immediate` is passed, trigger the function on the
+  // leading edge, instead of the trailing.
+  _.debounce = function(func, wait, immediate) {
+    var timeout, result;
 
+    var later = function(context, args) {
+      timeout = null;
+      if (args) result = func.apply(context, args);
+    };
 
+    var debounced = restArgs(function(args) {
+      if (timeout) clearTimeout(timeout);
+      if (immediate) {
+        var callNow = !timeout;
+        timeout = setTimeout(later, wait);
+        if (callNow) result = func.apply(this, args);
+      } else {
+        timeout = _.delay(later, wait, this, args);
+      }
+
+      return result;
+    });
+
+    debounced.cancel = function() {
+      clearTimeout(timeout);
+      timeout = null;
+    };
+
+    return debounced;
+  };
+```
 
 
 **2、焦点事件**
+bulr   在元素失去焦点时触发。这个事件不会冒泡；所有浏览器都支持它。
+focus
+
+DOMFocusIn：在元素获得焦点时触发。这个事件与 HTML 事件 focus 等价，但它冒泡。只有Opera 支持这个事件。 DOM3 级事件废弃了 DOMFocusIn，选择了 focusin。
+DOMFocusOut：在元素失去焦点时触发。这个事件是 HTML 事件 blur 的通用版本。只有 Opera支持这个事件。 DOM3 级事件废弃了 DOMFocusOut，选择了 focusout。
+focusin：在元素获得焦点时触发。这个事件与 HTML 事件 focus 等价，但它冒泡。支持这个事件的浏览器有 IE5.5+、 Safari 5.1+、 Opera 11.5+和 Chrome。
+focusout：在元素失去焦点时触发。这个事件是 HTML 事件 blur 的通用版本。支持这个事件的浏览器有 IE5.5+、 Safari 5.1+、 Opera 11.5+和 Chrome。
+
+当焦点从页面中的一个元素移动到另一个元素，会依次触发下列事件：
+(1) focusout 在失去焦点的元素上触发；
+(2) focusin 在获得焦点的元素上触发；
+(3) blur 在失去焦点的元素上触发；
+(4) DOMFocusOut 在失去焦点的元素上触发；
+(5) focus 在获得焦点的元素上触发；
+(6) DOMFocusIn 在获得焦点的元素上触发。
+
+检测事件支持
+var isSupported = document.implementation.hasFeature("FocusEvent", "3.0");
+
+
 
 **3、鼠标与轮滚事件**
+
+DOM3级定义了9个鼠标事件
+
+
 
 **4、键盘与文本事件**
 
