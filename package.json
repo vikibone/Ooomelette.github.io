@@ -1,0 +1,19 @@
+{
+  "name": "blog-name",
+  "version": "1.0.0",
+  "description": "it's a minux vue ,webpack ,markdown,git page to blog\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ooomelette/Ooomelette.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ooomelette/Ooomelette.github.io/issues"
+  },
+  "homepage": "https://github.com/Ooomelette/Ooomelette.github.io#readme"
+}
